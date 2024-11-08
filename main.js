@@ -14,6 +14,12 @@ const main = async () => {
     try {
         await app.whenReady();
         createWindow();
+
+        app.on('window-all-closed', () => {
+            if (process.platform !== 'darwin'){
+                app.quit();
+            }
+        })
     } catch (error) {
         console.error("Error al inicializar la aplicación:", error);
     }
