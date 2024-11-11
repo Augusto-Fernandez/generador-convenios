@@ -15,7 +15,7 @@ const createWindow = () => {
         }
     });
 
-    mainWindow.loadFile(path.join(app.getAppPath(), "/dist-vite/index.html"));
+    mainWindow.loadFile(path.join(app.getAppPath(), "/dist/index.html"));
 };
 
 const main = async () => {
