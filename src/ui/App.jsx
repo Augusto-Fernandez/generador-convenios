@@ -1,31 +1,21 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { HashRouter } from 'react-router-dom';
+//con Electron se usa HashRouter porque es una app
+//en una app web se usaría BrowserRouter
+import AppRouter from './routes/AppRouter.jsx';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="App"> 
+      <HashRouter
+        future={{ /* esta sección es para solucionar algunas advertencias de react-router */
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      > 
+        <AppRouter/>
+      </HashRouter>
+    </div>
   )
 }
 
-export default App
+export default App;
