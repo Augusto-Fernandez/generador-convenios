@@ -14,7 +14,7 @@ export const makers = [
     name: '@electron-forge/maker-squirrel',
     config: {
       authors: `${process.env.AUTHOR}`,
-      description: "Generador de convios para compañías de seguros",
+      description: "Generador de convenios para compañías de seguros",
       //setupIcon: "./ruta/a/tu/icono.ico" creo que este es el icono
     },
   },
