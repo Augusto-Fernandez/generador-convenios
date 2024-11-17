@@ -5,7 +5,7 @@ import AppRouter from './routes/AppRouter.jsx';
 
 function App() {
   return (
-    <div className="App"> 
+    <div> 
       <HashRouter
         future={{ /* esta sección es para solucionar algunas advertencias de react-router */
           v7_startTransition: true,
