@@ -2,8 +2,7 @@ import { app, BrowserWindow } from "electron";
 import path from 'node:path';
 import { fileURLToPath } from 'url';
 import { ipcMain } from "electron";
-import { PDFDocument } from "pdf-lib";
-import fs from "fs/promises"
+import generatePdf from "./controller/pdfController.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,15 +42,5 @@ const main = async () => {
 main();
 
 ipcMain.handle('create-pdf', async (event, data) => {
-    try {
-      const pdfDoc = await PDFDocument.create();
-      const page = pdfDoc.addPage();
-      page.drawText('You can create PDFs!');
-  
-      const pdfBytes = await pdfDoc.save();
-      await fs.writeFile(`${data.nroSiniestro}.pdf`, pdfBytes);
-    } catch (error) {
-      console.error('Error al generar el PDF:', error);
-      return { success: false, error: error.message };
-    }
+    await generatePdf(data);
 });

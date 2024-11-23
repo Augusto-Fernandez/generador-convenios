@@ -239,6 +239,22 @@ const ConvenioSimple = () => {
                 {errors.sumaIndemnizacion && typeof errors.sumaIndemnizacion.message === 'string' && (
                     <span className="text-red-500">{errors.sumaIndemnizacion.message}</span>
                 )}
+                <div>
+                    <label>Texto de Suma a Indemnizar</label>
+                    <input 
+                        type="text"
+                        className="border border-black"
+                        {...register("sumaIndemnizacionTexto", {
+                            required: {
+                                value: true,
+                                message: "Texto de suma a indemnizar es requerida",
+                            },
+                        })}
+                    />
+                </div>
+                {errors.sumaIndemnizacionTexto && typeof errors.sumaIndemnizacionTexto.message === 'string' && (
+                    <span className="text-red-500">{errors.sumaIndemnizacionTexto.message}</span>
+                )}
                 <button type="submit">Generar Convenio</button>
             </form>
         </div>
