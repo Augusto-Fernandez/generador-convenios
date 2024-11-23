@@ -1,23 +1,18 @@
 import { useForm } from "react-hook-form"
-import { useState } from "react";
 
 const ConvenioSimple = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const [formSubmited,setFormSubmited] = useState(false)
-    const [getData,setGetData] = useState("no data")
 
     const onSubmit = async (data) => {
-        setGetData(`${data.nroSiniestro}`)
-        setFormSubmited(true);
+        try{
+            window.api.createPDF(data);
+        }catch(e){
+            console.error('Error al generar el PDF:', e);
+        }
     };
 
     return (
         <div>
-            {
-                formSubmited && (
-                    <p>{getData}</p>
-                )
-            }
             <form onSubmit={handleSubmit(onSubmit)} className="border border-black">
                 <div>
                     <label>Número de Siniestro</label>
