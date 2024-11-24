@@ -36,69 +36,130 @@ const pdfManager = async (data) => {
 
 
     CUIL – CUIT ……………………………………..`.replace(/\r/g, "");
+                                //saca el retorno de carro
 
     const pdfDoc = await PDFDocument.create();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    //ancho de una hoja A4
     const pageWidth = 595.28;
+    //alto de una hoja A4
     const pageHeight = 841.89;
     const margin = 50;
 
+    //ancho máximo del texto
+    //es el ancho de la pagina A4 menos los dos margenes
     const maxWidth = pageWidth - margin * 2;
     const lineSpacing = 1.2;
 
+    //Se encarga en dividir el texto en lineas que estén dentro del maxWidth
     const splitTextIntoLinesWithNewlines = (text, font, fontSize, maxWidth) => {
+        //divide en rawLines respetando los saltos de línea que ya existen
+        /*Ej:
+            Línea uno con texto
+            Línea dos
+
+            queda:
+            rawLines = ["Línea uno con texto", "Línea dos"];
+        */
         const rawLines = text.split("\n");
         const formattedLines = [];
 
         rawLines.forEach((rawLine) => {
+            //divide en cada rawline en un array de palabras individuales borrando los espacios
             const words = rawLine.split(" ");
+            //va a guardar la linea de texto ajustada
             let currentLine = "";
 
             words.forEach((word) => {
-                const testLine = currentLine ? `${currentLine} ${word}` : word;
+                //almacena la linea de texto provisoria va a evaluar después
+                let testLine
+
+                //"" es falsy por lo que si no hay un linea, agregar el primer word del array
+                if(currentLine){
+                    testLine = `${currentLine} ${word}`
+                }else{
+                    testLine = word
+                }
+
+                //calcula el ancho de testLine
+                //widthOfTextAtSize es un método de pdf-lib que calcula el ancho de una linea de acuerdo a un string y int basado en el tamaño de la fuente
                 const testLineWidth = font.widthOfTextAtSize(testLine, fontSize);
+                //si el ancho de testLine es mayor al ancho máximo del texto
                 if (testLineWidth > maxWidth) {
+                    //pushea la currentLine (no testLine) a la array de lineas formateadas
                     formattedLines.push(currentLine);
+                    //hace una nueva currentLine que empieza como la palabra que se está evaluando
                     currentLine = word;
                 } else {
+                    //si l ancho de testLine no es mayor al ancho máximo del texto
+                    //hace que currentLine sea testLine
                     currentLine = testLine;
                 }
             });
 
-            if (currentLine) formattedLines.push(currentLine);
+            //si currentLine no es un string vacio, lo pushea al array de las lineas formateadas
+            if(currentLine){
+                formattedLines.push(currentLine);
+            }
         });
 
+        //devuelve el array de las lineas formateadas
         return formattedLines;
     };
 
+    //calcula el tamaño máximo de la fuente dentro de un espacio específico
+    //maxWidth y MaxHeight son las medidas máximas
     const calculateFontSize = (text, font, maxWidth, maxHeight) => {
         let fontSize = 12;
+        //altura del texto, lo inicializa en 0
         let textHeight = 0;
 
+        //se usa while porque va a probar cual tamaño de fuente corresponde
+        //con cada iteración, baja el tamaño de la fuente
         while (fontSize > 1) {
+            //divide al texto en lineas que usan el tamaño de la fuente
             const lines = splitTextIntoLinesWithNewlines(text, font, fontSize, maxWidth);
+            //establece la altura del texto como la cantidad de lineas por la multiplicación del tamaño de la fuente y el interlineado
             textHeight = lines.length * (fontSize * lineSpacing);
+            //si la altura del texto es menor o igual a la altura máxima del texto
             if (textHeight <= maxHeight) {
+                //corta la ejecución del while
                 break;
             }
+            //si la altura del texto es mayor a la altura máxima del texto, baja 0.5 el tamaño de la fuente y ejecute otra vez el bucle
             fontSize -= 0.5;
         }
+
         return fontSize;
     };
 
+    //calcula el tamaño de la fuente. Como maxHeight le pasa el alto de una hoja A4 menos el margen de arriba y abajo
     const fontSize = calculateFontSize(body, font, maxWidth, pageHeight - margin * 2);
-
+    //divide el texto en lineas de acuerdo al tamaño de fuente que corresponde
     const lines = splitTextIntoLinesWithNewlines(body, font, fontSize, maxWidth);
 
+    //crea una pagina con los tamaños de una hoja A4
     const page = pdfDoc.addPage([pageWidth, pageHeight]);
+    //esta variable rastrea la posición vertical donde se empieza a dibujar el texto
+    //se inicializa en la altura de la pagina menos el margen superior
     let currentY = pageHeight - margin;
 
+    //itera por cada linea del texto formateado
     lines.forEach((line) => {
+        //verifica si currentY está por encima del margen inferior
         if (currentY < margin) {
+            //si currentY está por debajo del margen inferior
+            //lo reinicia
             currentY = pageHeight - margin;
+            //crea una nueva pagina con tamaño de hoja A4
             page = pdfDoc.addPage([pageWidth, pageHeight]);
         }
+        //si currentY está por encima del margen inferior
+        //dibuja el texto en la pagina
+        //x es el final del margen izquierdo y "y" es la altura de la página menos el marco superior
+        //le pasa el tamaño de la fuente necesario y el tipo de fuente
         page.drawText(line, { x: margin, y: currentY, size: fontSize, font });
+        //actualiza currentY restandole el tamaño de la fuente de la Linea por el interlineado
         currentY -= fontSize * lineSpacing;
     });
 
