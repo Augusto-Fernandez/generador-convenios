@@ -1,5 +1,6 @@
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import fs from "fs/promises"
+import { getLogoPath } from "../pathResolver.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -49,7 +50,7 @@ const pdfManager = async (data) => {
     //ancho máximo del texto
     //es el ancho de la pagina A4 menos los dos margenes
     const maxWidth = pageWidth - margin * 2;
-    const lineSpacing = 1.2;
+    const lineSpacing = 1.0;
 
     //Se encarga en dividir el texto en lineas que estén dentro del maxWidth
     const splitTextIntoLinesWithNewlines = (text, font, fontSize, maxWidth) => {
@@ -133,6 +134,15 @@ const pdfManager = async (data) => {
         return fontSize;
     };
 
+    //agrega logo de cabecera
+    const pngImageBytes = await fs.readFile(getLogoPath());
+    const pngImage = await pdfDoc.embedJpg(pngImageBytes);
+    //dimensiones de la imagen en DPI
+    const imageWidth = 30.07; // 1.06 cm en puntos
+    const imageHeight = 44.21; // 1.56 cm en puntos
+    //equivale a un margen entre la imagen y el texto de 0.5cm en DPI
+    const imgMargin = 14.175;
+
     //calcula el tamaño de la fuente. Como maxHeight le pasa el alto de una hoja A4 menos el margen de arriba y abajo
     const fontSize = calculateFontSize(body, font, maxWidth, pageHeight - margin * 2);
     //divide el texto en lineas de acuerdo al tamaño de fuente que corresponde
@@ -143,6 +153,15 @@ const pdfManager = async (data) => {
     //esta variable rastrea la posición vertical donde se empieza a dibujar el texto
     //se inicializa en la altura de la pagina menos el margen superior
     let currentY = pageHeight - margin;
+
+    //la posición x de la imagen es el ancho de la hoja A4 menos el ancho de la imagen divido 2 para encontrar el punto medio
+    const imageX = (pageWidth - imageWidth) / 2;
+    //la posición y de la imagen es el alto de la hoja A4 menos el alto de la imagen menos el margen entre la imagen y el texto
+    const imageY = pageHeight - imageHeight - imgMargin;
+    page.drawImage(pngImage, { x: imageX, y: imageY, width: imageWidth, height: imageHeight });
+
+    //ahora establece currentY como la altura de la página menos el margen superior menos el tamaño y menos el margen entre la imagen y el texto
+    currentY = imageY - imgMargin;
 
     //itera por cada linea del texto formateado
     lines.forEach((line) => {

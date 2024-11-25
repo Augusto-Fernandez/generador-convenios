@@ -1,11 +1,7 @@
 import { app, BrowserWindow } from "electron";
-import path from 'node:path';
-import { fileURLToPath } from 'url';
 import { ipcMain } from "electron";
+import { getPreloadPath, getUIPath } from "./pathResolver.js";
 import generatePdf from "./controller/pdfController.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const createWindow = () => {
     const mainWindow = new BrowserWindow({
@@ -13,7 +9,7 @@ const createWindow = () => {
         width: 800,
         height: 600,
         webPreferences: {
-            preload: path.join(__dirname, 'preload.cjs')
+            preload: getPreloadPath()
         },
         autoHideMenuBar: true,
         contextIsolation: true,
@@ -21,7 +17,7 @@ const createWindow = () => {
         nodeIntegration: false,
     });
 
-    mainWindow.loadFile(path.join(app.getAppPath(), "/dist/index.html"));
+    mainWindow.loadFile(getUIPath());
 };
 
 const main = async () => {
