@@ -134,25 +134,20 @@ const pdfManager = async (data) => {
         return fontSize;
     };
 
+    //crea una pagina con los tamaños de una hoja A4
+    let page = pdfDoc.addPage([pageWidth, pageHeight]);
+    //esta variable rastrea la posición vertical donde se empieza a dibujar el texto
+    //se inicializa en la altura de la pagina menos el margen superior
+    let currentY = pageHeight - margin;
+
     //agrega logo de cabecera
     const pngImageBytes = await fs.readFile(getLogoPath());
     const pngImage = await pdfDoc.embedJpg(pngImageBytes);
     //dimensiones de la imagen en DPI
     const imageWidth = 30.07; // 1.06 cm en puntos
     const imageHeight = 44.21; // 1.56 cm en puntos
-    //equivale a un margen entre la imagen y el texto de 0.5cm en DPI
+    //equivale a un margen entre la imagen y el titulo de 0.5cm en DPI
     const imgMargin = 14.175;
-
-    //calcula el tamaño de la fuente. Como maxHeight le pasa el alto de una hoja A4 menos el margen de arriba y abajo
-    const fontSize = calculateFontSize(body, font, maxWidth, pageHeight - margin * 2);
-    //divide el texto en lineas de acuerdo al tamaño de fuente que corresponde
-    const lines = splitTextIntoLinesWithNewlines(body, font, fontSize, maxWidth);
-
-    //crea una pagina con los tamaños de una hoja A4
-    const page = pdfDoc.addPage([pageWidth, pageHeight]);
-    //esta variable rastrea la posición vertical donde se empieza a dibujar el texto
-    //se inicializa en la altura de la pagina menos el margen superior
-    let currentY = pageHeight - margin;
 
     //la posición x de la imagen es el ancho de la hoja A4 menos el ancho de la imagen divido 2 para encontrar el punto medio
     const imageX = (pageWidth - imageWidth) / 2;
@@ -162,6 +157,30 @@ const pdfManager = async (data) => {
 
     //ahora establece currentY como la altura de la página menos el margen superior menos el tamaño y menos el margen entre la imagen y el texto
     currentY = imageY - imgMargin;
+
+    const title = `ACUERDO CONCILIATORIO - DESISTIMIENTO DE ACCIONES – SINIESTRO N° ${data.nroSiniestro}`
+    const titleFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const titleFontSize = 9;
+    const titleWidth = titleFont.widthOfTextAtSize(title, titleFontSize);
+    //hace divido 2 para que esté centrado
+    const titleX = (pageWidth - titleWidth) / 2;
+    //equivale a un margen entre el titulo y el texto de 0.5cm en DPI
+    const titleMargin = 14.175;
+
+    page.drawText(title, { 
+        x: titleX, 
+        y: currentY, 
+        size: titleFontSize, 
+        font: titleFont 
+    });
+
+    //mueve currenY abajo del margen de title
+    currentY -= titleMargin;
+
+    //calcula el tamaño de la fuente. Como maxHeight le pasa el alto de una hoja A4 menos el margen de arriba y abajo
+    const fontSize = calculateFontSize(body, font, maxWidth, pageHeight - margin * 2);
+    //divide el texto en lineas de acuerdo al tamaño de fuente que corresponde
+    const lines = splitTextIntoLinesWithNewlines(body, font, fontSize, maxWidth);
 
     //itera por cada linea del texto formateado
     lines.forEach((line) => {
