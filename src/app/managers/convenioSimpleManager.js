@@ -89,7 +89,7 @@ class ConvenioSimpleManager {
         */
         const formattedLines = [];
 
-        //itera por cada linea
+        //itera por cada linea (parrafo)
         rawLines.forEach((rawLine, index) => {
             //con trim() saca los espacios en blanco del principio y final de rawLine
             //si rawLine es una linea vacia
@@ -104,6 +104,12 @@ class ConvenioSimpleManager {
             const words = rawLine.split(" ");
             //va a guardar la linea de texto ajustada
             let currentLine = "";
+
+            //se fija si está en el primer parrafo
+            if(index === 0){
+                //agrega al principio del array de palabras la sangría pasandola como si fuera una palabra
+                words.unshift("        ");
+            }
 
             //itera por cada palabra
             words.forEach((word) => {
