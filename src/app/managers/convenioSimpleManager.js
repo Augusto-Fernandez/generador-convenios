@@ -1,7 +1,9 @@
-import { PDFDocument, StandardFonts } from "pdf-lib";
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import fs from "fs/promises";
-import convenioSimpleTemplate from "../templates/convenioSimple.js";
+import { convenioSimpleTemplate, lastPage } from "../templates/convenioSimple.js";
 import { getLogoPath } from "../pathResolver.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 class ConvenioSimpleManager {
     constructor(data){
@@ -70,15 +72,16 @@ class ConvenioSimpleManager {
             font: titleFont 
         });
 
-        //mueve currentTopMargin abajo del margen de title
+        //mueve currentTopMargin abajo de title y del margen de title
         this.currentTopMargin -= titleFontSize + titleMargin;
     };
 
     //Se encarga en dividir el texto en lineas que estén dentro del textMaxWidth
     //devuelve un array que contiene subarray que tienen el string del ancho del textMaxWidth
-    splitTextIntoLines = async (fontSize) => {
+    //isLastPage se fija si está dividiendo las lineas de la segunda pagina del convenio
+    splitTextIntoLines = async (lines, fontSize, isLastPage) => {
         this.font = await this.pdf.embedFont(StandardFonts.Helvetica);
-        const rawLines = this.body.split(/\r?\n/);
+        const rawLines = lines.split(/\r?\n/);
         //divide el texto en lineas de acuerdo a los saltos de lineas
         /*Ej:
             Línea uno con texto.
@@ -108,6 +111,12 @@ class ConvenioSimpleManager {
             //se fija si está en el primer parrafo
             if(index === 0){
                 //agrega al principio del array de palabras la sangría pasandola como si fuera una palabra
+                words.unshift("        ");
+            }
+
+            //se fija si está en la segunda pagina del convenio
+            if(isLastPage && index === 11){
+                //si está en la segunda pagina, agrega sangría al parrafo de "Finalmente, manifiesto que ..."
                 words.unshift("        ");
             }
 
@@ -190,16 +199,16 @@ class ConvenioSimpleManager {
     };
 
     //calcula el tamaño máximo de la fuente para que entre dentro de una página
-    calculateFontSize = async () => {  
+    calculateFontSize = async (lines, isLastPage) => {  
         let fontSize = 7;
 
         //se usa while porque va a probar cual tamaño de fuente corresponde
         //con cada iteración, baja el tamaño de la fuente
         while (fontSize > 1) {
             //divide al texto en lineas que usan el tamaño de la fuente
-            const lines = await this.splitTextIntoLines(fontSize);
+            const splitedLines = await this.splitTextIntoLines(lines, fontSize, isLastPage);
             //establece la altura del texto como la cantidad de lineas por la multiplicación del tamaño de la fuente y el interlineado
-            const textHeight = lines.length * (fontSize * this.lineSpacing);
+            const textHeight = splitedLines.length * (fontSize * this.lineSpacing);
             //si la altura del texto es menor o igual a la altura máxima de la pagina
             if (textHeight <= this.textMaxHeight) {
                 //corta la ejecución del while
@@ -214,9 +223,11 @@ class ConvenioSimpleManager {
 
     setBody = async () =>{
         //calcula el tamaño de la fuente
-        const fontSize = await this.calculateFontSize();
+        //pasa lastPage en false porque está haciendo la primera pagina del convenio
+        const fontSize = await this.calculateFontSize(this.body, false);
         //divide el texto en lineas de acuerdo al tamaño de fuente que corresponde
-        const lines = await this.splitTextIntoLines(fontSize);
+        //pasa lastPage en false porque está haciendo la primera pagina del convenio
+        const lines = await this.splitTextIntoLines(this.body, fontSize, false);
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
@@ -285,9 +296,120 @@ class ConvenioSimpleManager {
                 });
             }
     
-            //actualiza currentY restandole el tamaño de la fuente de la Linea por el interlineado
+            //actualiza currentTopMargin restandole el tamaño de la fuente de la Linea por el interlineado
+            //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
+            //entra la linea escrita y la próxima 
             this.currentTopMargin -= fontSize * this.lineSpacing;
         }
+    };
+
+    setLastPage = async () =>{
+        //reinicia el margen en el principio de la nueva hoja y tres reglones para abajo
+        this.currentTopMargin = this.pageHeight - this.margin * 3;
+        this.page = this.pdf.addPage([this.pageWidth, this.pageHeight]);
+
+        const title = "FORMA DE PAGO (tildar la opción que corresponda)";
+        const titleFont = await this.pdf.embedFont(StandardFonts.HelveticaBold);
+        const titleFontSize = 7;
+        const titleWidth = titleFont.widthOfTextAtSize(title, titleFontSize);
+        //equivale a un margen entre el titulo y el texto de 0.5cm en DPI
+        //const titleMargin = 14.175;
+
+        this.page.drawText(title, { 
+            x: this.margin, 
+            y: this.currentTopMargin, 
+            size: titleFontSize, 
+            font: titleFont 
+        });
+
+        //mueve currentTopMargin abajo del margen de title
+        //this.currentTopMargin -= titleFontSize + titleMargin;
+        this.currentTopMargin -= titleFontSize * this.lineSpacing;
+
+        //tamaño del checkbox
+        const checkboxSize = 7;
+
+        const bankedCash = "- Efectivo Bancarizado";
+
+        this.page.drawText(bankedCash, { 
+            x: this.margin * 2, 
+            y: this.currentTopMargin, 
+            size: titleFontSize, 
+            font: this.font
+        });
+
+        //dibuja el checkbox al lado de bankedCash
+        this.page.drawRectangle({
+            x: this.margin * 5, //la pocisión x es el tamaño de 5 margenes así queda al mismo ancho del otro checkbox
+            y: this.currentTopMargin - (checkboxSize - titleFontSize) / 2,
+            width: checkboxSize,
+            height: checkboxSize,
+            borderColor: rgb(0, 0, 0),
+            borderWidth: 1,
+        });
+
+        //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
+        //entra la linea escrita y la próxima 
+        this.currentTopMargin -= titleFontSize  * this.lineSpacing;
+
+        const bankBranch =`  Banco ${process.env.BANCO}, Sucursal ............................................................ Dirección ............................................................`;
+
+        this.page.drawText(bankBranch, { 
+            x: this.margin * 2, 
+            y: this.currentTopMargin, 
+            size: titleFontSize, 
+            font: this.font
+        });
+
+        this.currentTopMargin -= titleFontSize  * this.lineSpacing;
+
+        const bankTransfer = "- Transferencia Bancaria";
+
+        this.page.drawText(bankTransfer, { 
+            x: this.margin * 2, 
+            y: this.currentTopMargin, 
+            size: titleFontSize, 
+            font: this.font
+        });
+
+        //dibuja el checkbox al lado de bankTransfer
+        this.page.drawRectangle({
+            x: this.margin * 5, //la pocisión x es el tamaño de 5 margenes así queda al mismo ancho del otro checkbox
+            y: this.currentTopMargin - (checkboxSize - titleFontSize) / 2,
+            width: checkboxSize,
+            height: checkboxSize,
+            borderColor: rgb(0, 0, 0),
+            borderWidth: 1,
+        });
+
+        //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
+        //entra la linea escrita y la próxima. En este caso lo hace por el doble para que haya mas espacio
+        this.currentTopMargin -= titleFontSize * (this.lineSpacing * 2);
+
+        const subTitle = "SOLO PARA EL CASO DE TRANSFERENCIA BANCARIA";
+        //lo centra
+        const subTitleX = (this.pageWidth - titleWidth) / 2;
+
+        this.page.drawText(subTitle, { 
+            x: subTitleX, 
+            y: this.currentTopMargin, 
+            size: titleFontSize, 
+            font: this.font 
+        });
+
+        //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
+        //entra la linea escrita y la próxima 
+        this.currentTopMargin -= titleFontSize * this.lineSpacing;
+
+        const fontSize = await this.calculateFontSize(lastPage, true);
+        const lines = await this.splitTextIntoLines(lastPage, fontSize, true);
+
+        lines.forEach((line) => {
+            this.page.drawText(line, { x: this.margin, y: this.currentTopMargin, size: titleFontSize, font:this.font });
+            //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
+            //entra la linea escrita y la próxima 
+            this.currentTopMargin -= titleFontSize * this.lineSpacing;
+        });
     };
 
     createPdf = async () =>{
@@ -295,6 +417,7 @@ class ConvenioSimpleManager {
         await this.setLogo();
         await this.setTitle();
         await this.setBody();
+        await this.setLastPage();
 
         const pdfBytes = await this.pdf.save();
         await fs.writeFile(`${this.title}.pdf`, pdfBytes);

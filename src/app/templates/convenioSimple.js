@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const convenioSimpleTemplate = (data) => {
+export const convenioSimpleTemplate = (data) => {
     const today = new Date();
     const day = today.getDate();
     const month = today.toLocaleString("es-ES", { month: "long" });
@@ -30,4 +30,19 @@ const convenioSimpleTemplate = (data) => {
     CUIL – CUIT ……………………………………..`.replace(/\r/g, "");//saca el retorno de carro
 };
 
-export default convenioSimpleTemplate;
+export const lastPage = `Manifiesto expresamente mi voluntad de recibir el importe de la indemnización a través del SISTEMA DE CRÉDITO AUTOMÁTICO EN CUENTA BANCARIA. En virtud de lo expuesto, solicito a ${process.env.COMPANIA} que en la fecha que disponga, acredite los fondos en la cuenta que a continuación se individualiza:
+
+Datos Bancarios
+Banco: Sucursal:.......................................................................................
+Cuenta corriente No:.......................................................................................................................................................
+Caja de Ahorro No:.......................................................................................................................................................
+C.B.U.:.......................................................................................................................................................
+1oTitular:.......................................................................................................................................................
+2o Titular:.......................................................................................................................................................
+Dirección de e- mail:.........................................................................................................................................
+
+Finalmente, manifiesto que, una vez que ${process.env.COMPANIA} efectúe la transferencia correspondiente a la cuenta antes identificada, la misma tendrá carácter cancelatorio respecto de las obligaciones emergentes del presente acuerdo transaccional, liberando a ${process.env.COMPANIA}, además, de toda responsabilidad y/u obligación por la pérdida y/o disminución de dicha transferencia y/o la imposibilidad de extraer las sumas que se acrediten en la referida cuenta.
+
+Firma:.........................................................
+Aclaración:...................................................
+Lugar y Fecha:..............................................`.replace(/\r/g, "");//saca el retorno de carro
