@@ -109,6 +109,7 @@ class ConvenioSimpleManager {
             let currentLine = "";
 
             //se fija si está en el primer parrafo
+            //porque este convenio tiene sangría solamente en el primer parrafo
             if(index === 0){
                 //agrega al principio del array de palabras la sangría pasandola como si fuera una palabra
                 words.unshift("        ");
@@ -285,12 +286,12 @@ class ConvenioSimpleManager {
                 words.forEach((word, index) => {
                     //escribre la palabra
                     this.page.drawText(word, { x, y: this.currentTopMargin, size: fontSize, font: this.font });
-                    //mueve x a la derecha haciendo un espacio normal
+                    //mueve x a la derecha el espacio de la palabra que escribió
                     x += this.font.widthOfTextAtSize(word, fontSize);
     
                     //si el index es menor al tamaño del array de espacios
                     if (index < spacings.length) {
-                        //agrega el espacio extra correspondiente al indice de la palabra donse se está
+                        //agrega el espacio formateado correspondiente al indice de la palabra donse se está
                         x += spacings[index];
                     }
                 });
@@ -298,7 +299,7 @@ class ConvenioSimpleManager {
     
             //actualiza currentTopMargin restandole el tamaño de la fuente de la Linea por el interlineado
             //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
-            //entra la linea escrita y la próxima 
+            //entre la linea escrita y la próxima 
             this.currentTopMargin -= fontSize * this.lineSpacing;
         }
     };
@@ -349,7 +350,7 @@ class ConvenioSimpleManager {
         });
 
         //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
-        //entra la linea escrita y la próxima 
+        //entre la linea escrita y la próxima 
         this.currentTopMargin -= titleFontSize  * this.lineSpacing;
 
         const bankBranch =`  Banco ${process.env.BANCO}, Sucursal ............................................................ Dirección ............................................................`;
@@ -383,7 +384,7 @@ class ConvenioSimpleManager {
         });
 
         //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
-        //entra la linea escrita y la próxima. En este caso lo hace por el doble para que haya mas espacio
+        //entre la linea escrita y la próxima. En este caso lo hace por el doble para que haya mas espacio
         this.currentTopMargin -= titleFontSize * (this.lineSpacing * 2);
 
         const subTitle = "SOLO PARA EL CASO DE TRANSFERENCIA BANCARIA";
@@ -398,18 +399,75 @@ class ConvenioSimpleManager {
         });
 
         //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
-        //entra la linea escrita y la próxima 
+        //entre la linea escrita y la próxima 
         this.currentTopMargin -= titleFontSize * this.lineSpacing;
 
         const fontSize = await this.calculateFontSize(lastPage, true);
         const lines = await this.splitTextIntoLines(lastPage, fontSize, true);
 
-        lines.forEach((line) => {
-            this.page.drawText(line, { x: this.margin, y: this.currentTopMargin, size: titleFontSize, font:this.font });
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+    
+            //con trim() saca los espacios en blanco del principio y final de la linea
+            //si line es una linea vacia
+            if (line.trim() === "") {
+                //hace un espacio entre vacio entre los parrafos
+                //el cual va a ser de la mitad del tamaño de la fuente por el interlineado
+                this.currentTopMargin -= (fontSize / 2) * this.lineSpacing;
+                //corta el la iteración del for con la linea y pasa a la próxima
+                continue;
+            }
+    
+            //determinar si el la última linea el parrafo
+            let isLastLineOfParagraph = false;
+
+            //si la posición del bucle es mayor a la cantida de lineas que hay
+            //o si la linea siguiente a la que se está ahora es una linea vacía
+            if(i === lines.length - 1 || lines[i + 1].trim() === ""){
+                isLastLineOfParagraph = true;
+            };
+    
+            //escribe el texto sin justificar
+            if (isLastLineOfParagraph) {
+                //establece como principio de la linea el margen izquierdo
+                let x = this.margin;
+                //divide la linea en un array de palabras sin espacios
+                const words = line.split(" ");
+                words.forEach((word) => {
+                    //escribre la palabra
+                    this.page.drawText(word, { x, y: this.currentTopMargin, size: fontSize, font: this.font });
+                    //mueve x hacía la derecha, la distancia es el ancho de la palabra que escribió mas un espacio común
+                    //de esta forma la próxima palabra se escribe después del espacio que sigue a la palabra anterior
+                    x += this.font.widthOfTextAtSize(word, fontSize) + this.font.widthOfTextAtSize(" ", fontSize);
+                });
+            //justifica el texto
+            } else {
+                //obtiene los espacios para que la linea esté justificada
+                const { spacings } = this.justifyLine(line, fontSize);
+                //divide la linea en un array de palabras sin espacios
+                const words = line.split(" ");
+                //establece como principio de la linea el margen izquierdo
+                let x = this.margin;
+    
+                words.forEach((word, index) => {
+                    //escribre la palabra
+                    this.page.drawText(word, { x, y: this.currentTopMargin, size: fontSize, font: this.font });
+                    //mueve x a la derecha el espacio de la palabra que escribió
+                    x += this.font.widthOfTextAtSize(word, fontSize);
+    
+                    //si el index es menor al tamaño del array de espacios
+                    if (index < spacings.length) {
+                        //agrega el espacio formateado correspondiente al indice de la palabra donse se está
+                        x += spacings[index];
+                    }
+                });
+            }
+    
+            //actualiza currentTopMargin restandole el tamaño de la fuente de la Linea por el interlineado
             //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
-            //entra la linea escrita y la próxima 
-            this.currentTopMargin -= titleFontSize * this.lineSpacing;
-        });
+            //entre la linea escrita y la próxima 
+            this.currentTopMargin -= fontSize * this.lineSpacing;
+        }
     };
 
     createPdf = async () =>{
