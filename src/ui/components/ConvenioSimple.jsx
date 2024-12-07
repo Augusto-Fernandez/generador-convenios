@@ -32,20 +32,8 @@ const ConvenioSimple = () => {
                 )}
                 <div>
                     <label>Nombre de Tercero Propietario</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("nombre3roPropietario", {
-                            required: {
-                                value: true,
-                                message: "Nombre de Tercero Propietario es requerido",
-                            },
-                        })}
-                    />
+                    <input type="text" className="border border-black"/>
                 </div>
-                {errors.nombre3roPropietario && typeof errors.nombre3roPropietario.message === 'string' && (
-                    <span className="text-red-500">{errors.nombre3roPropietario.message}</span>
-                )}
                 <div>
                     <label>Fecha de Siniestro</label>
                     <input 
@@ -209,20 +197,8 @@ const ConvenioSimple = () => {
                 )}
                 <div>
                     <label>Conductor de Vehículo Tercero</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("conductor3ro", {
-                            required: {
-                                value: true,
-                                message: "Conductor de Vehículo Tercero es requerido",
-                            },
-                        })}
-                    />
+                    <input type="text" className="border border-black"/>
                 </div>
-                {errors.conductor3ro && typeof errors.conductor3ro.message === 'string' && (
-                    <span className="text-red-500">{errors.conductor3ro.message}</span>
-                )}
                 <div>
                     <label>Suma a Indemnizar</label>
                     <input 
