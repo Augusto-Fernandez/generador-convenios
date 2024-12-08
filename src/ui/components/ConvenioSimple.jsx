@@ -24,6 +24,14 @@ const ConvenioSimple = () => {
                                 value: true,
                                 message: "Número de siniestro es requerido",
                             },
+                            pattern: {
+                                value: /^\d{1,10}$/,
+                                message: "Debe ser un número de hasta 10 dígitos",
+                            },
+                            maxLength: {
+                                value: 10,
+                                message: "El número de siniestro no puede superar los 10 dígitos",
+                            },
                         })}
                     />
                 </div>
@@ -32,7 +40,11 @@ const ConvenioSimple = () => {
                 )}
                 <div>
                     <label>Nombre de Tercero Propietario</label>
-                    <input type="text" className="border border-black"/>
+                    <input 
+                        type="text" 
+                        className="border border-black"
+                        {...register("nombre3roPropietario")}
+                    />
                 </div>
                 <div>
                     <label>Fecha de Siniestro</label>
@@ -44,6 +56,10 @@ const ConvenioSimple = () => {
                             required: {
                                 value: true,
                                 message: "Fecha de Siniestro es requerido",
+                            },
+                            pattern: {
+                                value: /^\d{2}\/\d{2}\/\d{2}$/,
+                                message: "La fecha debe estar en un formato dd/mm/aa",
                             },
                         })}
                     />
@@ -109,6 +125,10 @@ const ConvenioSimple = () => {
                                 value: true,
                                 message: "Patente de Vehículo Asegurado es requerida",
                             },
+                            pattern: {
+                                value: /^[a-zA-Z]{3}\d{3}$|^[a-zA-Z]{2}\d{3}[a-zA-Z]{2}$/,
+                                message: "La patente debe tener un formato válido: ABC123 o AB123CD",
+                            },
                         })}
                     />
                 </div>
@@ -140,6 +160,10 @@ const ConvenioSimple = () => {
                             required: {
                                 value: true,
                                 message: "DNI de Conductor de Vehículo Asegurado es requerido",
+                            },
+                            pattern: {
+                                value: /^\d{1,8}$/,
+                                message: "El DNI debe tener hasta ocho dígitos",
                             },
                         })}
                     />
@@ -187,7 +211,11 @@ const ConvenioSimple = () => {
                         {...register("patente3ro", {
                             required: {
                                 value: true,
-                                message: "Patente de Vehículo Terceroes requerida",
+                                message: "Patente de Vehículo Tercero es requerida",
+                            },
+                            pattern: {
+                                value: /^[a-zA-Z]{3}\d{3}$|^[a-zA-Z]{2}\d{3}[a-zA-Z]{2}$/,
+                                message: "La patente debe tener un formato válido: ABC123 o AB123CD",
                             },
                         })}
                     />
@@ -197,7 +225,11 @@ const ConvenioSimple = () => {
                 )}
                 <div>
                     <label>Conductor de Vehículo Tercero</label>
-                    <input type="text" className="border border-black"/>
+                    <input 
+                        type="text"
+                        className="border border-black"
+                        {...register("conductor3ro")}
+                    />
                 </div>
                 <div>
                     <label>Suma a Indemnizar</label>
@@ -231,7 +263,9 @@ const ConvenioSimple = () => {
                 {errors.sumaIndemnizacionTexto && typeof errors.sumaIndemnizacionTexto.message === 'string' && (
                     <span className="text-red-500">{errors.sumaIndemnizacionTexto.message}</span>
                 )}
-                <button type="submit">Generar Convenio</button>
+                <div>
+                    <button type="submit">Generar Convenio</button>
+                </div>
             </form>
         </div>
     )
