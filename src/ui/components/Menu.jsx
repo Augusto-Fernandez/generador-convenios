@@ -7,7 +7,9 @@ const Menu = () => {
         <li>
           <Link to="/convenio-simple">Convenio Simple</Link>
         </li>
-        <li>Convenio con Honorarios</li>
+        <li>
+          <Link to="/convenio-honorarios">Convenio con Honorarios</Link>
+        </li>
       </ul>
     </div>
   )

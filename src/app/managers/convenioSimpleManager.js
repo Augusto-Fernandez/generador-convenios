@@ -51,7 +51,8 @@ class ConvenioSimpleManager {
         const imageY = this.pageHeight - imageHeight - imgMargin;
         this.page.drawImage(pngImage, { x: imageX, y: imageY, width: imageWidth, height: imageHeight });
 
-        //ahora establece currentTopMargin como la altura de la página menos el margen superior menos el tamaño y menos el margen entre la imagen y el texto
+        //ahora establece currentTopMargin como la altura de la página menos el margen superior menos el tamaño de la imagen 
+        // y menos el margen entre la imagen y el texto
         this.currentTopMargin = imageY - imgMargin;
     };
 
@@ -77,7 +78,7 @@ class ConvenioSimpleManager {
     };
 
     //Se encarga en dividir el texto en lineas que estén dentro del textMaxWidth
-    //devuelve un array que contiene subarray que tienen el string del ancho del textMaxWidth
+    //devuelve un array que contiene strings del ancho del textMaxWidth
     //isLastPage se fija si está dividiendo las lineas de la segunda pagina del convenio
     splitTextIntoLines = async (lines, fontSize, isLastPage) => {
         this.font = await this.pdf.embedFont(StandardFonts.Helvetica);
@@ -186,7 +187,7 @@ class ConvenioSimpleManager {
         //calcula el espacio restante haciendo el ancho maximo del texto menos el ancho total de las palabras de la linea
         const remainingSpace = this.textMaxWidth - textWidth;
         //cuenta la cantidad de espacios que hay tomando el length de words - 1 dado que la primera palabra no tiene un espacio anterior
-        const spaceCount = words.length - 1; // Espacios entre palabras
+        const spaceCount = words.length - 1;
         
         //el espacio extra para justificar es el espacio sobrante dividido entra la cantidad de espacios
         const extraSpacing = remainingSpace / spaceCount;

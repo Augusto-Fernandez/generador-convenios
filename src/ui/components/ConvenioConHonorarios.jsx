@@ -1,11 +1,11 @@
 import { useForm } from "react-hook-form"
 
-const ConvenioSimple = () => {
+const ConvenioConHonorarios = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
 
     const onSubmit = async (data) => {
         try{
-            window.api.convenioSimple(data);
+            window.api.convenioHonorarios(data);
         }catch(e){
             console.error('Error al generar el PDF:', e);
         }
@@ -37,6 +37,38 @@ const ConvenioSimple = () => {
                 </div>
                 {errors.nroSiniestro && typeof errors.nroSiniestro.message === 'string' && (
                     <span className="text-red-500">{errors.nroSiniestro.message}</span>
+                )}
+                <div>
+                    <label>Apoderado</label>
+                    <input 
+                        type="text"
+                        className="border border-black"
+                        {...register("apoderado", {
+                            required: {
+                                value: true,
+                                message: "Aporado es requerido",
+                            },
+                        })}
+                    />
+                </div>
+                {errors.apoderado && typeof errors.apoderado.message === 'string' && (
+                    <span className="text-red-500">{errors.apoderado.message}</span>
+                )}
+                <div>
+                    <label>Tercero Representado</label>
+                    <input 
+                        type="text"
+                        className="border border-black"
+                        {...register("representado", {
+                            required: {
+                                value: true,
+                                message: "Tercero Representado es requerido",
+                            },
+                        })}
+                    />
+                </div>
+                {errors.representado && typeof errors.representado.message === 'string' && (
+                    <span className="text-red-500">{errors.representado.message}</span>
                 )}
                 <div>
                     <label>Nombre de Tercero Propietario</label>
@@ -98,6 +130,22 @@ const ConvenioSimple = () => {
                 </div>
                 {errors.ciudadOcurrencia && typeof errors.ciudadOcurrencia.message === 'string' && (
                     <span className="text-red-500">{errors.ciudadOcurrencia.message}</span>
+                )}
+                <div>
+                    <label>Provincia de Ocurrencia</label>
+                    <input 
+                        type="text"
+                        className="border border-black"
+                        {...register("provinciaOcurrencia", {
+                            required: {
+                                value: true,
+                                message: "Provincia de Ocurrencia es requerida",
+                            },
+                        })}
+                    />
+                </div>
+                {errors.provinciaOcurrencia && typeof errors.provinciaOcurrencia.message === 'string' && (
+                    <span className="text-red-500">{errors.provinciaOcurrencia.message}</span>
                 )}
                 <div>
                     <label>Vehículo Asegurado</label>
@@ -232,6 +280,14 @@ const ConvenioSimple = () => {
                     />
                 </div>
                 <div>
+                    <label>DNI de Conductor de Vehículo Tercero</label>
+                    <input 
+                        type="text"
+                        className="border border-black"
+                        {...register("dniConductorTercero")}
+                    />
+                </div>
+                <div>
                     <label>Suma a Indemnizar</label>
                     <input 
                         type="number"
@@ -264,6 +320,22 @@ const ConvenioSimple = () => {
                     <span className="text-red-500">{errors.sumaIndemnizacionTexto.message}</span>
                 )}
                 <div>
+                    <label>Porcentaje de Honorarios</label>
+                    <input 
+                        type="number"
+                        className="border border-black"
+                        {...register("porcentaje", {
+                            required: {
+                                value: true,
+                                message: "Porcentaje de Honorarios es requerido",
+                            },
+                        })}
+                    />
+                </div>
+                {errors.porcentaje && typeof errors.porcentaje.message === 'string' && (
+                    <span className="text-red-500">{errors.porcentaje.message}</span>
+                )}
+                <div>
                     <button type="submit">Generar Convenio</button>
                 </div>
             </form>
@@ -271,4 +343,4 @@ const ConvenioSimple = () => {
     )
 }
 
-export default ConvenioSimple;
+export default ConvenioConHonorarios;

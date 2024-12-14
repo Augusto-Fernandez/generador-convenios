@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import { ipcMain } from "electron";
 import { getPreloadPath, getUIPath } from "./pathResolver.js";
-import generatePdf from "./controller/pdfController.js";
+import { generateConvenioSimple, generateConvenioHonorarios } from "./controller/pdfController.js";
 
 const createWindow = () => {
     const mainWindow = new BrowserWindow({
@@ -37,6 +37,10 @@ const main = async () => {
 
 main();
 
-ipcMain.handle('create-pdf', async (event, data) => {
-    await generatePdf(data);
+ipcMain.handle('convenio-simple', async (event, data) => {
+    await generateConvenioSimple(data);
+});
+
+ipcMain.handle('convenio-honorarios', async (event, data) => {
+    await generateConvenioHonorarios(data);
 });
