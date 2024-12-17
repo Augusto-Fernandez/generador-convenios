@@ -1,4 +1,4 @@
-import { convenioHonorariosTemplate } from "../templates/convenioHonorarios.js";
+import { convenioHonorariosTemplate, lastPage } from "../templates/convenioHonorarios.js";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 import fs from "fs/promises";
 import { getLogoPath } from "../pathResolver.js";
@@ -79,7 +79,8 @@ class ConvenioHonorariosManager {
 
     //Se encarga en dividir el texto en lineas que estén dentro del textMaxWidth
     //devuelve un array que contiene strings del ancho del textMaxWidth
-    splitTextIntoLines = async (lines) => {
+    //isLastPage valida si está en la última pagina para agregar las sangrías
+    splitTextIntoLines = async (lines, isLastPage) => {
         this.font = await this.pdf.embedFont(StandardFonts.Helvetica);
         const rawLines = lines.split(/\r?\n/);
         //divide el texto en lineas de acuerdo a los saltos de lineas
@@ -107,6 +108,12 @@ class ConvenioHonorariosManager {
             const words = rawLine.split(" ");
             //va a guardar la linea de texto ajustada
             let currentLine = "";
+
+            //se fija si está en la última pagina y 
+            //si es el primer parrafo y el de "Finalmente, manifiesto que ..."
+            if((isLastPage && index === 0) || (isLastPage && index === 11)){
+                words.unshift("        ");
+            }
 
             //itera por cada palabra
             words.forEach((word) => {
@@ -186,7 +193,7 @@ class ConvenioHonorariosManager {
 
     setBody = async () =>{
         //divide el texto en lineas de acuerdo al tamaño de fuente que corresponde
-        const lines = await this.splitTextIntoLines(this.body);
+        const lines = await this.splitTextIntoLines(this.body, false);
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
@@ -208,6 +215,107 @@ class ConvenioHonorariosManager {
                 this.currentTopMargin = this.pageHeight - 28.35;
                 //crea una nueva pagina
                 this.page = this.pdf.addPage([this.pageWidth, this.pageHeight]);
+            }
+    
+            //determinar si el la última linea el parrafo
+            let isLastLineOfParagraph = false;
+
+            //si la posición del bucle es igual a la cantida de lineas que hay
+            //o si la linea siguiente a la que se está ahora es una linea vacía
+            if(i === lines.length - 1 || lines[i + 1].trim() === ""){
+                isLastLineOfParagraph = true;
+            };
+    
+            //escribe el texto sin justificar
+            if (isLastLineOfParagraph) {
+                //establece como principio de la linea el margen izquierdo
+                let x = this.margin;
+                //divide la linea en un array de palabras sin espacios
+                const words = line.split(" ");
+                words.forEach((word) => {
+                    //escribre la palabra
+                    this.page.drawText(word, { x, y: this.currentTopMargin, size: this.fontSize, font: this.font });
+                    //mueve x hacía la derecha, la distancia es el ancho de la palabra que escribió mas un espacio común
+                    //de esta forma la próxima palabra se escribe después del espacio que sigue a la palabra anterior
+                    x += this.font.widthOfTextAtSize(word, this.fontSize) + this.font.widthOfTextAtSize(" ", this.fontSize);
+                });
+            //justifica el texto
+            } else {
+                //obtiene los espacios para que la linea esté justificada
+                const { spacings } = this.justifyLine(line);
+                //divide la linea en un array de palabras sin espacios
+                const words = line.split(" ");
+                //establece como principio de la linea el margen izquierdo
+                let x = this.margin;
+    
+                words.forEach((word, index) => {
+                    //escribre la palabra
+                    this.page.drawText(word, { x, y: this.currentTopMargin, size: this.fontSize, font: this.font });
+                    //mueve x a la derecha el espacio de la palabra que escribió
+                    x += this.font.widthOfTextAtSize(word, this.fontSize);
+    
+                    //si el index es menor al tamaño del array de espacios
+                    if (index < spacings.length) {
+                        //agrega el espacio formateado correspondiente al indice de la palabra donse se está
+                        x += spacings[index];
+                    }
+                });
+            }
+    
+            //actualiza currentTopMargin restandole el tamaño de la fuente de la Linea por el interlineado
+            //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
+            //entre la linea escrita y la próxima 
+            this.currentTopMargin -= this.fontSize * this.lineSpacing;
+        }
+    };
+
+    setLastPage = async () =>{
+        //reinicia el margen en el principio de la nueva hoja
+        this.currentTopMargin = this.pageHeight - this.margin;
+        this.page = this.pdf.addPage([this.pageWidth, this.pageHeight]);
+
+        const titleFont = await this.pdf.embedFont(StandardFonts.HelveticaBold);
+
+        this.page.drawText("FORMA DE PAGO", { 
+            x: this.margin, 
+            y: this.currentTopMargin, 
+            size: this.fontSize, 
+            font: titleFont 
+        });
+
+        this.currentTopMargin -= this.fontSize * this.lineSpacing;
+
+        this.page.drawText("Transferencia Bancaria", { 
+            x: this.margin, 
+            y: this.currentTopMargin, 
+            size: this.fontSize, 
+            font: this.font 
+        });
+
+        this.currentTopMargin -= this.fontSize * this.lineSpacing * 2;
+
+        this.page.drawText("SOLO PARA EL CASO DE TRANSFERENCIA BANCARIA", { 
+            x: this.margin, 
+            y: this.currentTopMargin, 
+            size: this.fontSize, 
+            font: titleFont 
+        });
+
+        this.currentTopMargin -= this.fontSize * this.lineSpacing * 2;
+
+        const lines = await this.splitTextIntoLines(lastPage, true);
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+    
+            //con trim() saca los espacios en blanco del principio y final de la linea
+            //si line es una linea vacia
+            if (line.trim() === "") {
+                //hace un espacio entre vacio entre los parrafos
+                //el cual va a ser de la mitad del tamaño de la fuente por el interlineado
+                this.currentTopMargin -= (this.fontSize / 2) * this.lineSpacing;
+                //corta el la iteración del for con la linea y pasa a la próxima
+                continue;
             }
     
             //determinar si el la última linea el parrafo
@@ -267,6 +375,7 @@ class ConvenioHonorariosManager {
         await this.setLogo();
         await this.setTitle();
         await this.setBody();
+        await this.setLastPage();
 
         const pdfBytes = await this.pdf.save();
         await fs.writeFile(`${this.title}.pdf`, pdfBytes);
