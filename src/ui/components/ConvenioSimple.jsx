@@ -100,6 +100,22 @@ const ConvenioSimple = () => {
                     <span className="text-red-500">{errors.ciudadOcurrencia.message}</span>
                 )}
                 <div>
+                    <label>Provincia de Ocurrencia</label>
+                    <input 
+                        type="text"
+                        className="border border-black"
+                        {...register("provinciaOcurrencia", {
+                            required: {
+                                value: true,
+                                message: "Provincia de Ocurrencia es requerida",
+                            },
+                        })}
+                    />
+                </div>
+                {errors.provinciaOcurrencia && typeof errors.provinciaOcurrencia.message === 'string' && (
+                    <span className="text-red-500">{errors.provinciaOcurrencia.message}</span>
+                )}
+                <div>
                     <label>Vehículo Asegurado</label>
                     <input 
                         type="text"

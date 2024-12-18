@@ -1,9 +1,8 @@
-import { convenioHonorariosTemplate, lastPage } from "../templates/convenioHonorarios.js";
-import { PDFDocument, StandardFonts } from "pdf-lib";
 import fs from "fs/promises";
+import { PDFDocument, StandardFonts } from "pdf-lib";
+
+import { convenioHonorariosTemplate, lastPage } from "../templates/convenioHonorarios.js";
 import { getLogoPath } from "../pathResolver.js";
-import dotenv from "dotenv";
-dotenv.config();
 
 class ConvenioHonorariosManager {
     constructor(data){
@@ -28,6 +27,7 @@ class ConvenioHonorariosManager {
         this.title = data.nroSiniestro;
         this.body = convenioHonorariosTemplate(data);
         this.font;
+        this.boldFont;
         this.fontSize = 10;
     }
 
@@ -59,8 +59,8 @@ class ConvenioHonorariosManager {
 
     setTitle = async () =>{
         const title = `ACUERDO CONCILIATORIO - DESISTIMIENTO DE ACCIONES – SINIESTRO ${this.title}`
-        const titleFont = await this.pdf.embedFont(StandardFonts.HelveticaBold);
-        const titleWidth = titleFont.widthOfTextAtSize(title, this.fontSize);
+        this.boldFont = await this.pdf.embedFont(StandardFonts.HelveticaBold);
+        const titleWidth = this.boldFont.widthOfTextAtSize(title, this.fontSize);
         //hace divido 2 para que esté centrado
         const titleX = (this.pageWidth - titleWidth) / 2;
         //equivale a un margen entre el titulo y el texto de 0.5cm en DPI
@@ -70,7 +70,7 @@ class ConvenioHonorariosManager {
             x: titleX, 
             y: this.currentTopMargin, 
             size: this.fontSize, 
-            font: titleFont 
+            font: this.boldFont 
         });
 
         //mueve currentTopMargin abajo de title y del margen de title
@@ -149,8 +149,9 @@ class ConvenioHonorariosManager {
             }
 
             //antes de pasar a la siguiente linea
-            //se fija que la posición donde se está sea dentro del rango del array de lineas
+            //se fija que la posición donde se está no sea el último parrafo
             //agrega un linea vacia al final de cada parrafo
+            //estos espacios en blanco los va a usar en setBody() y setLastPage() para hacer los espacios entre parrafos
             if (index < rawLines.length - 1) {
                 formattedLines.push("");
             }
@@ -220,7 +221,7 @@ class ConvenioHonorariosManager {
             //determinar si el la última linea el parrafo
             let isLastLineOfParagraph = false;
 
-            //si la posición del bucle es igual a la cantida de lineas que hay
+            //si la posición del bucle es igual a la posición de la última linea
             //o si la linea siguiente a la que se está ahora es una linea vacía
             if(i === lines.length - 1 || lines[i + 1].trim() === ""){
                 isLastLineOfParagraph = true;
@@ -274,13 +275,11 @@ class ConvenioHonorariosManager {
         this.currentTopMargin = this.pageHeight - this.margin;
         this.page = this.pdf.addPage([this.pageWidth, this.pageHeight]);
 
-        const titleFont = await this.pdf.embedFont(StandardFonts.HelveticaBold);
-
         this.page.drawText("FORMA DE PAGO", { 
             x: this.margin, 
             y: this.currentTopMargin, 
             size: this.fontSize, 
-            font: titleFont 
+            font: this.boldFont 
         });
 
         this.currentTopMargin -= this.fontSize * this.lineSpacing;
@@ -298,7 +297,7 @@ class ConvenioHonorariosManager {
             x: this.margin, 
             y: this.currentTopMargin, 
             size: this.fontSize, 
-            font: titleFont 
+            font: this.boldFont  
         });
 
         this.currentTopMargin -= this.fontSize * this.lineSpacing * 2;

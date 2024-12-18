@@ -1,7 +1,9 @@
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import fs from "fs/promises";
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+
 import { convenioSimpleTemplate, lastPage } from "../templates/convenioSimple.js";
 import { getLogoPath } from "../pathResolver.js";
+
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -27,7 +29,8 @@ class ConvenioSimpleManager {
 
         this.title = data.nroSiniestro;
         this.body = convenioSimpleTemplate(data);
-        this.font
+        this.font;
+        this.boldFont;
     }
 
     setPage = async () =>{
@@ -58,9 +61,9 @@ class ConvenioSimpleManager {
 
     setTitle = async () =>{
         const title = `ACUERDO CONCILIATORIO - DESISTIMIENTO DE ACCIONES – SINIESTRO N° ${this.title}`
-        const titleFont = await this.pdf.embedFont(StandardFonts.HelveticaBold);
+        this.boldFont = await this.pdf.embedFont(StandardFonts.HelveticaBold);
         const titleFontSize = 9;
-        const titleWidth = titleFont.widthOfTextAtSize(title, titleFontSize);
+        const titleWidth = this.boldFont.widthOfTextAtSize(title, titleFontSize);
         //hace divido 2 para que esté centrado
         const titleX = (this.pageWidth - titleWidth) / 2;
         //equivale a un margen entre el titulo y el texto de 0.5cm en DPI
@@ -70,7 +73,7 @@ class ConvenioSimpleManager {
             x: titleX, 
             y: this.currentTopMargin, 
             size: titleFontSize, 
-            font: titleFont 
+            font: this.boldFont 
         });
 
         //mueve currentTopMargin abajo de title y del margen de title
@@ -156,8 +159,9 @@ class ConvenioSimpleManager {
             }
 
             //antes de pasar a la siguiente linea
-            //se fija que la posición donde se está sea dentro del rango del array de lineas
+            //se fija que la posición donde se está no sea el último parrafo
             //agrega un linea vacia al final de cada parrafo
+            //estos espacios en blanco los va a usar en setBody() y setLastPage() para hacer los espacios entre parrafos
             if (index < rawLines.length - 1) {
                 formattedLines.push("");
             }
@@ -256,7 +260,7 @@ class ConvenioSimpleManager {
             //determinar si el la última linea el parrafo
             let isLastLineOfParagraph = false;
 
-            //si la posición del bucle es mayor a la cantida de lineas que hay
+            //si la posición del bucle es igual a la posición de la última linea
             //o si la linea siguiente a la que se está ahora es una linea vacía
             if(i === lines.length - 1 || lines[i + 1].trim() === ""){
                 isLastLineOfParagraph = true;
@@ -310,40 +314,32 @@ class ConvenioSimpleManager {
         this.currentTopMargin = this.pageHeight - this.margin * 3;
         this.page = this.pdf.addPage([this.pageWidth, this.pageHeight]);
 
-        const title = "FORMA DE PAGO (tildar la opción que corresponda)";
-        const titleFont = await this.pdf.embedFont(StandardFonts.HelveticaBold);
-        const titleFontSize = 7;
-        const titleWidth = titleFont.widthOfTextAtSize(title, titleFontSize);
-        //equivale a un margen entre el titulo y el texto de 0.5cm en DPI
-        //const titleMargin = 14.175;
-
-        this.page.drawText(title, { 
-            x: this.margin, 
-            y: this.currentTopMargin, 
-            size: titleFontSize, 
-            font: titleFont 
-        });
-
-        //mueve currentTopMargin abajo del margen de title
-        //this.currentTopMargin -= titleFontSize + titleMargin;
-        this.currentTopMargin -= titleFontSize * this.lineSpacing;
-
+        const fontSize = 7;
         //tamaño del checkbox
         const checkboxSize = 7;
 
-        const bankedCash = "- Efectivo Bancarizado";
+        this.page.drawText("FORMA DE PAGO (tildar la opción que corresponda)", { 
+            x: this.margin, 
+            y: this.currentTopMargin, 
+            size: fontSize, 
+            font: this.boldFont 
+        });
 
-        this.page.drawText(bankedCash, { 
+        //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
+        //entre la linea escrita y la próxima
+        this.currentTopMargin -= fontSize * this.lineSpacing;
+
+        this.page.drawText("- Efectivo Bancarizado", { 
             x: this.margin * 2, 
             y: this.currentTopMargin, 
-            size: titleFontSize, 
+            size: fontSize, 
             font: this.font
         });
 
         //dibuja el checkbox al lado de bankedCash
         this.page.drawRectangle({
             x: this.margin * 5, //la pocisión x es el tamaño de 5 margenes así queda al mismo ancho del otro checkbox
-            y: this.currentTopMargin - (checkboxSize - titleFontSize) / 2,
+            y: this.currentTopMargin - (checkboxSize - fontSize) / 2,
             width: checkboxSize,
             height: checkboxSize,
             borderColor: rgb(0, 0, 0),
@@ -352,32 +348,28 @@ class ConvenioSimpleManager {
 
         //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
         //entre la linea escrita y la próxima 
-        this.currentTopMargin -= titleFontSize  * this.lineSpacing;
+        this.currentTopMargin -= fontSize  * this.lineSpacing;
 
-        const bankBranch =`  Banco ${process.env.BANCO}, Sucursal ............................................................ Dirección ............................................................`;
-
-        this.page.drawText(bankBranch, { 
+        this.page.drawText(`  Banco ${process.env.BANCO}, Sucursal ............................................................ Dirección ............................................................`, { 
             x: this.margin * 2, 
             y: this.currentTopMargin, 
-            size: titleFontSize, 
+            size: fontSize, 
             font: this.font
         });
 
-        this.currentTopMargin -= titleFontSize  * this.lineSpacing;
+        this.currentTopMargin -= fontSize  * this.lineSpacing;
 
-        const bankTransfer = "- Transferencia Bancaria";
-
-        this.page.drawText(bankTransfer, { 
+        this.page.drawText("- Transferencia Bancaria", { 
             x: this.margin * 2, 
             y: this.currentTopMargin, 
-            size: titleFontSize, 
+            size: fontSize, 
             font: this.font
         });
 
         //dibuja el checkbox al lado de bankTransfer
         this.page.drawRectangle({
             x: this.margin * 5, //la pocisión x es el tamaño de 5 margenes así queda al mismo ancho del otro checkbox
-            y: this.currentTopMargin - (checkboxSize - titleFontSize) / 2,
+            y: this.currentTopMargin - (checkboxSize - fontSize) / 2,
             width: checkboxSize,
             height: checkboxSize,
             borderColor: rgb(0, 0, 0),
@@ -386,25 +378,26 @@ class ConvenioSimpleManager {
 
         //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
         //entre la linea escrita y la próxima. En este caso lo hace por el doble para que haya mas espacio
-        this.currentTopMargin -= titleFontSize * (this.lineSpacing * 2);
+        this.currentTopMargin -= fontSize * (this.lineSpacing * 2);
 
         const subTitle = "SOLO PARA EL CASO DE TRANSFERENCIA BANCARIA";
+        const subTitleWidth = this.boldFont.widthOfTextAtSize(subTitle, fontSize);
         //lo centra
-        const subTitleX = (this.pageWidth - titleWidth) / 2;
+        const subTitleX = (this.pageWidth - subTitleWidth) / 2;
 
         this.page.drawText(subTitle, { 
             x: subTitleX, 
             y: this.currentTopMargin, 
-            size: titleFontSize, 
+            size: fontSize, 
             font: this.font 
         });
 
         //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
         //entre la linea escrita y la próxima 
-        this.currentTopMargin -= titleFontSize * this.lineSpacing;
+        this.currentTopMargin -= fontSize * this.lineSpacing;
 
-        const fontSize = await this.calculateFontSize(lastPage, true);
-        const lines = await this.splitTextIntoLines(lastPage, fontSize, true);
+        const lineFontSize = await this.calculateFontSize(lastPage, true);
+        const lines = await this.splitTextIntoLines(lastPage, lineFontSize, true);
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
@@ -414,7 +407,7 @@ class ConvenioSimpleManager {
             if (line.trim() === "") {
                 //hace un espacio entre vacio entre los parrafos
                 //el cual va a ser de la mitad del tamaño de la fuente por el interlineado
-                this.currentTopMargin -= (fontSize / 2) * this.lineSpacing;
+                this.currentTopMargin -= (lineFontSize / 2) * this.lineSpacing;
                 //corta el la iteración del for con la linea y pasa a la próxima
                 continue;
             }
@@ -436,15 +429,15 @@ class ConvenioSimpleManager {
                 const words = line.split(" ");
                 words.forEach((word) => {
                     //escribre la palabra
-                    this.page.drawText(word, { x, y: this.currentTopMargin, size: fontSize, font: this.font });
+                    this.page.drawText(word, { x, y: this.currentTopMargin, size: lineFontSize, font: this.font });
                     //mueve x hacía la derecha, la distancia es el ancho de la palabra que escribió mas un espacio común
                     //de esta forma la próxima palabra se escribe después del espacio que sigue a la palabra anterior
-                    x += this.font.widthOfTextAtSize(word, fontSize) + this.font.widthOfTextAtSize(" ", fontSize);
+                    x += this.font.widthOfTextAtSize(word, lineFontSize) + this.font.widthOfTextAtSize(" ", lineFontSize);
                 });
             //justifica el texto
             } else {
                 //obtiene los espacios para que la linea esté justificada
-                const { spacings } = this.justifyLine(line, fontSize);
+                const { spacings } = this.justifyLine(line, lineFontSize);
                 //divide la linea en un array de palabras sin espacios
                 const words = line.split(" ");
                 //establece como principio de la linea el margen izquierdo
@@ -452,9 +445,9 @@ class ConvenioSimpleManager {
     
                 words.forEach((word, index) => {
                     //escribre la palabra
-                    this.page.drawText(word, { x, y: this.currentTopMargin, size: fontSize, font: this.font });
+                    this.page.drawText(word, { x, y: this.currentTopMargin, size: lineFontSize, font: this.font });
                     //mueve x a la derecha el espacio de la palabra que escribió
-                    x += this.font.widthOfTextAtSize(word, fontSize);
+                    x += this.font.widthOfTextAtSize(word, lineFontSize);
     
                     //si el index es menor al tamaño del array de espacios
                     if (index < spacings.length) {
@@ -465,9 +458,9 @@ class ConvenioSimpleManager {
             }
     
             //actualiza currentTopMargin restandole el tamaño de la fuente de la Linea por el interlineado
-            //hace fontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
+            //hace lineFontSize porque es el tamaño de la linea que escribió y lineSpacing es el porcentaje de distancia
             //entre la linea escrita y la próxima 
-            this.currentTopMargin -= fontSize * this.lineSpacing;
+            this.currentTopMargin -= lineFontSize * this.lineSpacing;
         }
     };
 
