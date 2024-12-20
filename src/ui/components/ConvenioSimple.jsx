@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form"
+import { Link } from "react-router-dom";
 
 const ConvenioSimple = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -13,6 +14,9 @@ const ConvenioSimple = () => {
 
     return (
         <div>
+            <button>
+                <Link to="/">Volver</Link>
+            </button>
             <form onSubmit={handleSubmit(onSubmit)} className="border border-black">
                 <div>
                     <label>Número de Siniestro</label>
