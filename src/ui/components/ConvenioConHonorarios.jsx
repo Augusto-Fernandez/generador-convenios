@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form"
-import { Link } from "react-router-dom";
+
+import Header from "./Header.jsx";
 
 const ConvenioConHonorarios = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -14,9 +15,7 @@ const ConvenioConHonorarios = () => {
 
     return (
         <div>
-            <button>
-                <Link to="/">Volver</Link>
-            </button>
+            <Header title={"Convenios con Abogado"}/>
             <form onSubmit={handleSubmit(onSubmit)} className="border border-black">
                 <div>
                     <label>Número de Siniestro</label>

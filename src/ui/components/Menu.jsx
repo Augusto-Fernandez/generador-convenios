@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
 
+import Header from "./Header.jsx";
+
 const Menu = () => {
   return (
     <div>
+      <Header title={"Generador de Convenios"}/>
       <ul>
         <li>
           <Link to="/convenio-simple">Convenio Simple</Link>
