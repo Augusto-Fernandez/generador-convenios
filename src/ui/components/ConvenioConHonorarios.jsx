@@ -15,7 +15,7 @@ const ConvenioConHonorarios = () => {
 
     return (
         <div>
-            <Header title={"Convenios con Abogado"}/>
+            <Header title={"Convenios con Honorarios"}/>
             <form onSubmit={handleSubmit(onSubmit)} className="border border-black">
                 <div>
                     <label>Número de Siniestro</label>
