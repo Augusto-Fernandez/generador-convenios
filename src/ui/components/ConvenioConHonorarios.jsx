@@ -16,403 +16,448 @@ const ConvenioConHonorarios = () => {
     return (
         <div>
             <Header title={"Convenios con Honorarios"}/>
-            <form onSubmit={handleSubmit(onSubmit)} className="border border-black">
-                <div>
-                    <label>Número de Siniestro</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("nroSiniestro", {
-                            required: {
-                                value: true,
-                                message: "Número de siniestro es requerido",
-                            },
-                            pattern: {
-                                value: /^\d{1,10}$/,
-                                message: "Debe ser un número de hasta 10 dígitos",
-                            },
-                            maxLength: {
-                                value: 10,
-                                message: "El número de siniestro no puede superar los 10 dígitos",
-                            },
-                        })}
-                    />
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-2 flex flex-col items-center justify-center">
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Número de Siniestro</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("nroSiniestro", {
+                                required: {
+                                    value: true,
+                                    message: "Número de siniestro es requerido",
+                                },
+                                pattern: {
+                                    value: /^\d{1,10}$/,
+                                    message: "Debe ser un número de hasta 10 dígitos",
+                                },
+                                maxLength: {
+                                    value: 10,
+                                    message: "El número de siniestro no puede superar los 10 dígitos",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.nroSiniestro && typeof errors.nroSiniestro.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.nroSiniestro.message}</span>
+                    )}
                 </div>
-                {errors.nroSiniestro && typeof errors.nroSiniestro.message === 'string' && (
-                    <span className="text-red-500">{errors.nroSiniestro.message}</span>
-                )}
-                <div>
-                    <label>Apoderado</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("apoderado", {
-                            required: {
-                                value: true,
-                                message: "Aporado es requerido",
-                            },
-                            maxLength: {
-                                value: 40,
-                                message: "Este campo no puede tener más de 40 caracteres",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Apoderado</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("apoderado", {
+                                required: {
+                                    value: true,
+                                    message: "Aporado es requerido",
+                                },
+                                maxLength: {
+                                    value: 40,
+                                    message: "Este campo no puede tener más de 40 caracteres",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.apoderado && typeof errors.apoderado.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.apoderado.message}</span>
+                    )}
                 </div>
-                {errors.apoderado && typeof errors.apoderado.message === 'string' && (
-                    <span className="text-red-500">{errors.apoderado.message}</span>
-                )}
-                <div>
-                    <label>Tercero Representado</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("representado", {
-                            required: {
-                                value: true,
-                                message: "Tercero Representado es requerido",
-                            },
-                            maxLength: {
-                                value: 40,
-                                message: "Este campo no puede tener más de 40 caracteres",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Tercero Representado</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("representado", {
+                                required: {
+                                    value: true,
+                                    message: "Tercero Representado es requerido",
+                                },
+                                maxLength: {
+                                    value: 40,
+                                    message: "Este campo no puede tener más de 40 caracteres",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.representado && typeof errors.representado.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.representado.message}</span>
+                    )}
                 </div>
-                {errors.representado && typeof errors.representado.message === 'string' && (
-                    <span className="text-red-500">{errors.representado.message}</span>
-                )}
-                <div>
-                    <label>Nombre de Tercero Propietario</label>
-                    <input 
-                        type="text" 
-                        className="border border-black"
-                        {...register("nombre3roPropietario", {
-                            maxLength: {
-                                value: 40,
-                                message: "Este campo no puede tener más de 40 caracteres",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Nombre de Tercero Propietario</label>
+                        <input 
+                            type="text" 
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("nombre3roPropietario", {
+                                maxLength: {
+                                    value: 40,
+                                    message: "Este campo no puede tener más de 40 caracteres",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.nombre3roPropietario && typeof errors.nombre3roPropietario.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.nombre3roPropietario.message}</span>
+                    )}
                 </div>
-                {errors.nombre3roPropietario && typeof errors.nombre3roPropietario.message === 'string' && (
-                    <span className="text-red-500">{errors.nombre3roPropietario.message}</span>
-                )}
-                <div>
-                    <label>Fecha de Siniestro</label>
-                    <input 
-                        type="text"
-                        className="border border-black" 
-                        placeholder="dd/mm/aa"
-                        {...register("fechaSiniestro", {
-                            required: {
-                                value: true,
-                                message: "Fecha de Siniestro es requerido",
-                            },
-                            pattern: {
-                                value: /^\d{1,2}\/\d{1,2}\/\d{2}$/,
-                                message: "La fecha debe estar en un formato dd/mm/aa",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Fecha de Siniestro</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded" 
+                            placeholder="dd/mm/aa"
+                            {...register("fechaSiniestro", {
+                                required: {
+                                    value: true,
+                                    message: "Fecha de Siniestro es requerido",
+                                },
+                                pattern: {
+                                    value: /^\d{1,2}\/\d{1,2}\/\d{2}$/,
+                                    message: "La fecha debe estar en un formato dd/mm/aa",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.fechaSiniestro && typeof errors.fechaSiniestro.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.fechaSiniestro.message}</span>
+                    )}
                 </div>
-                {errors.fechaSiniestro && typeof errors.fechaSiniestro.message === 'string' && (
-                    <span className="text-red-500">{errors.fechaSiniestro.message}</span>
-                )}
-                <div>
-                    <label>Lugar del Siniestro</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("lugarSiniestro", {
-                            required: {
-                                value: true,
-                                message: "Lugar del Siniestro es requerido",
-                            },
-                            maxLength: {
-                                value: 40,
-                                message: "Este campo no puede tener más de 40 caracteres",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Lugar del Siniestro</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("lugarSiniestro", {
+                                required: {
+                                    value: true,
+                                    message: "Lugar del Siniestro es requerido",
+                                },
+                                maxLength: {
+                                    value: 40,
+                                    message: "Este campo no puede tener más de 40 caracteres",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.lugarSiniestro && typeof errors.lugarSiniestro.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.lugarSiniestro.message}</span>
+                    )}
                 </div>
-                {errors.lugarSiniestro && typeof errors.lugarSiniestro.message === 'string' && (
-                    <span className="text-red-500">{errors.lugarSiniestro.message}</span>
-                )}
-                <div>
-                    <label>Ciudad de Ocurrencia</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("ciudadOcurrencia", {
-                            required: {
-                                value: true,
-                                message: "Ciudad de Ocurrencia es requerida",
-                            },
-                            maxLength: {
-                                value: 40,
-                                message: "Este campo no puede tener más de 40 caracteres",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Ciudad de Ocurrencia</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("ciudadOcurrencia", {
+                                required: {
+                                    value: true,
+                                    message: "Ciudad de Ocurrencia es requerida",
+                                },
+                                maxLength: {
+                                    value: 40,
+                                    message: "Este campo no puede tener más de 40 caracteres",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.ciudadOcurrencia && typeof errors.ciudadOcurrencia.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.ciudadOcurrencia.message}</span>
+                    )}
                 </div>
-                {errors.ciudadOcurrencia && typeof errors.ciudadOcurrencia.message === 'string' && (
-                    <span className="text-red-500">{errors.ciudadOcurrencia.message}</span>
-                )}
-                <div>
-                    <label>Provincia de Ocurrencia</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("provinciaOcurrencia", {
-                            required: {
-                                value: true,
-                                message: "Provincia de Ocurrencia es requerida",
-                            },
-                            maxLength: {
-                                value: 40,
-                                message: "Este campo no puede tener más de 40 caracteres",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Provincia de Ocurrencia</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("provinciaOcurrencia", {
+                                required: {
+                                    value: true,
+                                    message: "Provincia de Ocurrencia es requerida",
+                                },
+                                maxLength: {
+                                    value: 40,
+                                    message: "Este campo no puede tener más de 40 caracteres",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.provinciaOcurrencia && typeof errors.provinciaOcurrencia.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.provinciaOcurrencia.message}</span>
+                    )}
                 </div>
-                {errors.provinciaOcurrencia && typeof errors.provinciaOcurrencia.message === 'string' && (
-                    <span className="text-red-500">{errors.provinciaOcurrencia.message}</span>
-                )}
-                <div>
-                    <label>Vehículo Asegurado</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("vehiculoAsegurado", {
-                            required: {
-                                value: true,
-                                message: "Vehículo Asegurado es requerido",
-                            },
-                            maxLength: {
-                                value: 40,
-                                message: "Este campo no puede tener más de 40 caracteres",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Vehículo Asegurado</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("vehiculoAsegurado", {
+                                required: {
+                                    value: true,
+                                    message: "Vehículo Asegurado es requerido",
+                                },
+                                maxLength: {
+                                    value: 40,
+                                    message: "Este campo no puede tener más de 40 caracteres",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.vehiculoAsegurado && typeof errors.vehiculoAsegurado.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.vehiculoAsegurado.message}</span>
+                    )}
                 </div>
-                {errors.vehiculoAsegurado && typeof errors.vehiculoAsegurado.message === 'string' && (
-                    <span className="text-red-500">{errors.vehiculoAsegurado.message}</span>
-                )}
-                <div>
-                    <label>Patente de Vehículo Asegurado</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("patenteVehiculoAsegurado", {
-                            required: {
-                                value: true,
-                                message: "Patente de Vehículo Asegurado es requerida",
-                            },
-                            pattern: {
-                                value: /^[a-zA-Z]{3}\d{3}$|^[a-zA-Z]{2}\d{3}[a-zA-Z]{2}$/,
-                                message: "La patente debe tener un formato válido: ABC123 o AB123CD",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Patente de Vehículo Asegurado</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("patenteVehiculoAsegurado", {
+                                required: {
+                                    value: true,
+                                    message: "Patente de Vehículo Asegurado es requerida",
+                                },
+                                pattern: {
+                                    value: /^[a-zA-Z]{3}\d{3}$|^[a-zA-Z]{2}\d{3}[a-zA-Z]{2}$/,
+                                    message: "La patente debe tener un formato válido: ABC123 o AB123CD",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.patenteVehiculoAsegurado && typeof errors.patenteVehiculoAsegurado.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.patenteVehiculoAsegurado.message}</span>
+                    )}
                 </div>
-                {errors.patenteVehiculoAsegurado && typeof errors.patenteVehiculoAsegurado.message === 'string' && (
-                    <span className="text-red-500">{errors.patenteVehiculoAsegurado.message}</span>
-                )}
-                <div>
-                    <label>Conductor de Vehículo Asegurado</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("conductorVehiculoAsegurado", {
-                            required: {
-                                value: true,
-                                message: "Conductor de Vehículo Asegurado es requerido",
-                            },
-                            maxLength: {
-                                value: 40,
-                                message: "Este campo no puede tener más de 40 caracteres",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Conductor de Vehículo Asegurado</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("conductorVehiculoAsegurado", {
+                                required: {
+                                    value: true,
+                                    message: "Conductor de Vehículo Asegurado es requerido",
+                                },
+                                maxLength: {
+                                    value: 40,
+                                    message: "Este campo no puede tener más de 40 caracteres",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.conductorVehiculoAsegurado && typeof errors.conductorVehiculoAsegurado.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.conductorVehiculoAsegurado.message}</span>
+                    )}
                 </div>
-                {errors.conductorVehiculoAsegurado && typeof errors.conductorVehiculoAsegurado.message === 'string' && (
-                    <span className="text-red-500">{errors.conductorVehiculoAsegurado.message}</span>
-                )}
-                <div>
-                    <label>DNI de Conductor de Vehículo Asegurado</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("dniConductorAsegurado", {
-                            required: {
-                                value: true,
-                                message: "DNI de Conductor de Vehículo Asegurado es requerido",
-                            },
-                            pattern: {
-                                value: /^\d{1,8}$/,
-                                message: "El DNI debe tener hasta ocho dígitos",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">DNI de Conductor de Vehículo Asegurado</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("dniConductorAsegurado", {
+                                required: {
+                                    value: true,
+                                    message: "DNI de Conductor de Vehículo Asegurado es requerido",
+                                },
+                                pattern: {
+                                    value: /^\d{1,8}$/,
+                                    message: "El DNI debe tener hasta ocho dígitos",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.dniConductorAsegurado && typeof errors.dniConductorAsegurado.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.dniConductorAsegurado.message}</span>
+                    )}
                 </div>
-                {errors.dniConductorAsegurado && typeof errors.dniConductorAsegurado.message === 'string' && (
-                    <span className="text-red-500">{errors.dniConductorAsegurado.message}</span>
-                )}
-                <div>
-                    <label>Propietario de Vehículo Asegurado</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("propietarioAsegurado", {
-                            required: {
-                                value: true,
-                                message: "Propietario de Vehículo Asegurado es requerido",
-                            },
-                            maxLength: {
-                                value: 40,
-                                message: "Este campo no puede tener más de 40 caracteres",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Propietario de Vehículo Asegurado</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("propietarioAsegurado", {
+                                required: {
+                                    value: true,
+                                    message: "Propietario de Vehículo Asegurado es requerido",
+                                },
+                                maxLength: {
+                                    value: 40,
+                                    message: "Este campo no puede tener más de 40 caracteres",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.propietarioAsegurado && typeof errors.propietarioAsegurado.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.propietarioAsegurado.message}</span>
+                    )}
                 </div>
-                {errors.propietarioAsegurado && typeof errors.propietarioAsegurado.message === 'string' && (
-                    <span className="text-red-500">{errors.propietarioAsegurado.message}</span>
-                )}
-                <div>
-                    <label>Vehículo Tercero</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("vehiculoTercero", {
-                            required: {
-                                value: true,
-                                message: "Vehículo Tercero es requerido",
-                            },
-                            maxLength: {
-                                value: 40,
-                                message: "Este campo no puede tener más de 40 caracteres",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Vehículo Tercero</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("vehiculoTercero", {
+                                required: {
+                                    value: true,
+                                    message: "Vehículo Tercero es requerido",
+                                },
+                                maxLength: {
+                                    value: 40,
+                                    message: "Este campo no puede tener más de 40 caracteres",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.vehiculoTercero && typeof errors.vehiculoTercero.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.vehiculoTercero.message}</span>
+                    )}
                 </div>
-                {errors.vehiculoTercero && typeof errors.vehiculoTercero.message === 'string' && (
-                    <span className="text-red-500">{errors.vehiculoTercero.message}</span>
-                )}
-                <div>
-                    <label>Patente de Vehículo Tercero</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("patente3ro", {
-                            required: {
-                                value: true,
-                                message: "Patente de Vehículo Tercero es requerida",
-                            },
-                            pattern: {
-                                value: /^[a-zA-Z]{3}\d{3}$|^[a-zA-Z]{2}\d{3}[a-zA-Z]{2}$/,
-                                message: "La patente debe tener un formato válido: ABC123 o AB123CD",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Patente de Vehículo Tercero</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("patente3ro", {
+                                required: {
+                                    value: true,
+                                    message: "Patente de Vehículo Tercero es requerida",
+                                },
+                                pattern: {
+                                    value: /^[a-zA-Z]{3}\d{3}$|^[a-zA-Z]{2}\d{3}[a-zA-Z]{2}$/,
+                                    message: "La patente debe tener un formato válido: ABC123 o AB123CD",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.patente3ro && typeof errors.patente3ro.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.patente3ro.message}</span>
+                    )}
                 </div>
-                {errors.patente3ro && typeof errors.patente3ro.message === 'string' && (
-                    <span className="text-red-500">{errors.patente3ro.message}</span>
-                )}
-                <div>
-                    <label>Conductor de Vehículo Tercero</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("conductor3ro", {
-                            maxLength: {
-                                value: 40,
-                                message: "Este campo no puede tener más de 40 caracteres",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Conductor de Vehículo Tercero</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("conductor3ro", {
+                                maxLength: {
+                                    value: 40,
+                                    message: "Este campo no puede tener más de 40 caracteres",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.conductor3ro && typeof errors.conductor3ro.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.conductor3ro.message}</span>
+                    )}
                 </div>
-                {errors.conductor3ro && typeof errors.conductor3ro.message === 'string' && (
-                    <span className="text-red-500">{errors.conductor3ro.message}</span>
-                )}
-                <div>
-                    <label>DNI de Conductor de Vehículo Tercero</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("dniConductorTercero", {
-                            pattern: {
-                                value: /^\d{1,8}$/,
-                                message: "El DNI debe tener hasta ocho dígitos",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">DNI de Conductor de Vehículo Tercero</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("dniConductorTercero", {
+                                pattern: {
+                                    value: /^\d{1,8}$/,
+                                    message: "El DNI debe tener hasta ocho dígitos",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.dniConductorTercero && typeof errors.dniConductorTercero.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.dniConductorTercero.message}</span>
+                    )}
                 </div>
-                {errors.dniConductorTercero && typeof errors.dniConductorTercero.message === 'string' && (
-                    <span className="text-red-500">{errors.dniConductorTercero.message}</span>
-                )}
-                <div>
-                    <label>Suma a Indemnizar</label>
-                    <input 
-                        type="number"
-                        className="border border-black"
-                        {...register("sumaIndemnizacion", {
-                            required: {
-                                value: true,
-                                message: "Suma a indemnizar es requerida",
-                            },
-                            maxLength: {
-                                value: 10,
-                                message: "Este campo no puede tener más de 10 caracteres",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Suma a Indemnizar</label>
+                        <input 
+                            type="number"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("sumaIndemnizacion", {
+                                required: {
+                                    value: true,
+                                    message: "Suma a indemnizar es requerida",
+                                },
+                                maxLength: {
+                                    value: 10,
+                                    message: "Este campo no puede tener más de 10 caracteres",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.sumaIndemnizacion && typeof errors.sumaIndemnizacion.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.sumaIndemnizacion.message}</span>
+                    )}
                 </div>
-                {errors.sumaIndemnizacion && typeof errors.sumaIndemnizacion.message === 'string' && (
-                    <span className="text-red-500">{errors.sumaIndemnizacion.message}</span>
-                )}
-                <div>
-                    <label>Texto de Suma a Indemnizar</label>
-                    <input 
-                        type="text"
-                        className="border border-black"
-                        {...register("sumaIndemnizacionTexto", {
-                            required: {
-                                value: true,
-                                message: "Texto de suma a indemnizar es requerida",
-                            },
-                            maxLength: {
-                                value: 50,
-                                message: "Este campo no puede tener más de 50 caracteres",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Texto de Suma a Indemnizar</label>
+                        <input 
+                            type="text"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("sumaIndemnizacionTexto", {
+                                required: {
+                                    value: true,
+                                    message: "Texto de suma a indemnizar es requerida",
+                                },
+                                maxLength: {
+                                    value: 50,
+                                    message: "Este campo no puede tener más de 50 caracteres",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.sumaIndemnizacionTexto && typeof errors.sumaIndemnizacionTexto.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.sumaIndemnizacionTexto.message}</span>
+                    )}
                 </div>
-                {errors.sumaIndemnizacionTexto && typeof errors.sumaIndemnizacionTexto.message === 'string' && (
-                    <span className="text-red-500">{errors.sumaIndemnizacionTexto.message}</span>
-                )}
-                <div>
-                    <label>Porcentaje de Honorarios</label>
-                    <input 
-                        type="number"
-                        step="0.01"
-                        className="border border-black"
-                        {...register("porcentaje", {
-                            required: {
-                                value: true,
-                                message: "Porcentaje de Honorarios es requerido",
-                            },
-                            pattern: {
-                                value: /^\d{1,3}(\.\d{1,2})?$/,
-                                message: "Formato no válido",
-                            },
-                        })}
-                    />
+                <div className="mb-6 h-12 w-2/3">
+                    <div className="flex justify-between">
+                        <label className="text-sm">Porcentaje de Honorarios</label>
+                        <input 
+                            type="number"
+                            step="0.01"
+                            className="h-6 border border-gray-500 rounded"
+                            {...register("porcentaje", {
+                                required: {
+                                    value: true,
+                                    message: "Porcentaje de Honorarios es requerido",
+                                },
+                                pattern: {
+                                    value: /^\d{1,3}(\.\d{1,2})?$/,
+                                    message: "Formato no válido",
+                                },
+                            })}
+                        />
+                    </div>
+                    {errors.porcentaje && typeof errors.porcentaje.message === 'string' && (
+                        <span className="text-red-500 text-xs">{errors.porcentaje.message}</span>
+                    )}
                 </div>
-                {errors.porcentaje && typeof errors.porcentaje.message === 'string' && (
-                    <span className="text-red-500">{errors.porcentaje.message}</span>
-                )}
-                <div>
-                    <button type="submit">Generar Convenio</button>
+                <div className="mb-4">
+                    <button 
+                        type="submit"
+                        className="rounded text-white p-2 bg-blue-500 hover:bg-blue-700"
+                    >
+                        Generar Convenio
+                    </button>
                 </div>
             </form>
         </div>
