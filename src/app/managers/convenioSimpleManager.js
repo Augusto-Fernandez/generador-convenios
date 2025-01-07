@@ -472,7 +472,7 @@ class ConvenioSimpleManager {
         await this.setLastPage();
 
         const pdfBytes = await this.pdf.save();
-        await fs.writeFile(`${this.title}.pdf`, pdfBytes);
+        await fs.writeFile(`Convenio ${this.title}.pdf`, pdfBytes);
         return 0;
     };
 };

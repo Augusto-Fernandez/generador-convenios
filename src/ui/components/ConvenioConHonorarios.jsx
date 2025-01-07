@@ -1,15 +1,20 @@
 import { useForm } from "react-hook-form"
+import { useState } from "react";
 
 import Header from "./Header.jsx";
 
 const ConvenioConHonorarios = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
+    const [isLoading, setIsLoading] = useState(false);
 
     const onSubmit = async (data) => {
+        setIsLoading(true);
         try{
             window.api.convenioHonorarios(data);
         }catch(e){
             console.error('Error al generar el PDF:', e);
+        }finally{
+            setIsLoading(false)
         }
     };
 
@@ -452,12 +457,25 @@ const ConvenioConHonorarios = () => {
                     )}
                 </div>
                 <div className="mb-4">
-                    <button 
-                        type="submit"
-                        className="rounded text-white p-2 bg-blue-500 hover:bg-blue-700"
-                    >
-                        Generar Convenio
-                    </button>
+                    {
+                        isLoading ? (
+                            <button 
+                                type="submit"
+                                disabled={isLoading}
+                                className="rounded text-blue-500 p-2 bg-gray-300"
+                            >
+                                Generando Convenio...
+                            </button>
+                        ) : (
+                            <button 
+                                type="submit"
+                                disabled={isLoading}
+                                className="rounded text-white p-2 bg-blue-500 hover:bg-blue-700"
+                            >
+                                Generar Convenio
+                            </button>
+                        )
+                    }
                 </div>
             </form>
         </div>
