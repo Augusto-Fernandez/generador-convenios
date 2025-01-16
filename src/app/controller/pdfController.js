@@ -5,9 +5,10 @@ export const generateConvenioSimple = async (data) => {
     try {
         const manager = new ConvenioSimpleManager(data);
         await manager.createPdf();
+        return;
     } catch (error) {
         console.error('Error al generar el PDF:', error);
-        return 1;
+        return null;
     }
 };
 
@@ -15,8 +16,9 @@ export const generateConvenioHonorarios = async (data) => {
     try {
         const manager = new ConvenioHonorariosManager(data);
         await manager.createPdf();
+        return;
     } catch (error) {
         console.error('Error al generar el PDF:', error);
-        return 1;
+        return null;
     }
 };

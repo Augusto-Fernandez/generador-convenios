@@ -39,8 +39,8 @@ class ConvenioSimpleManager {
     };
 
     setLogo = async () =>{
-        const pngImageBytes = await fs.readFile(getLogoPath());
-        const pngImage = await this.pdf.embedJpg(pngImageBytes);
+        const imageBytes = await fs.readFile(getLogoPath());
+        const image = await this.pdf.embedJpg(imageBytes);
 
         //dimensiones de la imagen en DPI
         const imageWidth = 30.07; // 1.06 cm en puntos
@@ -52,7 +52,7 @@ class ConvenioSimpleManager {
         const imageX = (this.pageWidth - imageWidth) / 2;
         //la posición y de la imagen es el alto de la hoja tamaño carta menos el alto de la imagen menos el margen entre la imagen y el texto
         const imageY = this.pageHeight - imageHeight - imgMargin;
-        this.page.drawImage(pngImage, { x: imageX, y: imageY, width: imageWidth, height: imageHeight });
+        this.page.drawImage(image, { x: imageX, y: imageY, width: imageWidth, height: imageHeight });
 
         //ahora establece currentTopMargin como la altura de la página menos el margen superior menos el tamaño de la imagen 
         // y menos el margen entre la imagen y el texto
@@ -473,7 +473,7 @@ class ConvenioSimpleManager {
 
         const pdfBytes = await this.pdf.save();
         await fs.writeFile(`Convenio ${this.title}.pdf`, pdfBytes);
-        return 0;
+        return;
     };
 };
 
