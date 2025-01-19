@@ -6,37 +6,21 @@ import Header from "./Header.jsx";
 const ConvenioConHonorarios = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [isLoading, setIsLoading] = useState(false);
-    const [alert, setAlert] = useState("");
 
     const onSubmit = async (data) => {
         setIsLoading(true);
 
         try{
-            const generatePdf = await window.api.convenioHonorarios(data);
-
-            if(generatePdf === null){
-                setAlert("Ocurrió un error al generar pdf");
-                setIsLoading(false);
-                return;
-            };
-
+            await window.api.convenioHonorarios(data);
             setIsLoading(false);
         }catch(e){
             console.error('Error en onSubmit:', e);
-            setAlert(true);
             setIsLoading(false);
         }
     };
 
     return (
         <>
-            {
-                alert && (
-                    <div className="fixed inset-0 z-10 flex items-center justify-center">
-                        <span>{alert}</span>
-                    </div>
-                )
-            }
             <Header title={"Convenios con Honorarios"}/>
             <form onSubmit={handleSubmit(onSubmit)} className="mt-2 flex flex-col items-center justify-center">
                 <div className="mb-6 h-12 w-2/3">
